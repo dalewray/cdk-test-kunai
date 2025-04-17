@@ -3,13 +3,15 @@
 This repository creates an IAM role with the AWS cdk. 
 
 ## Tasks
-Please create a PR to this repository with the following tasks.
+Please fork this repo and create a PR to your forked repository with the following tasks.
 
 1. Create an AWS resource that consumes this role. 
     - You may need to edit the role and its attached permissions to be relevant for your created resource.
 1. Write a test and ensure your deployment passes this test when `npm test` is run.
     - This test does not need to be overly complicated but should have a valid reason to exist.
 1. Be ready to speak on how you may enhance this deploy process or optimizations should this project be expanded to include a entire suite of interconnected AWS resources.
+
+When you have completed these task please make sure your repo is accessible and send your PR for review.
 
 ## Rules
 1. Please allot about 1 hours worth of time to this test. 
