@@ -1,11 +1,12 @@
 #!/usr/local/opt/node/bin/node
 import * as cdk from 'aws-cdk-lib';
 import { RoleStack } from '../lib/iam';
+const accountId = process.env.CDK_DEFAULT_ACCOUNT || '123456789012'; // Use AWS-defined variable with a fallback
 
 const app = new cdk.App();
 new RoleStack(app, 'role', {
   env: {
-    account: '123456789012', // dummy AWS account ID
+    account: accountId,
     region: 'us-east-1',
   },
   roleName: 'MyRole',

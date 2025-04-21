@@ -1,17 +1,51 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as Infrastructure from '../lib/infrastructure-stack';
+import { handler } from '../bin/handler';
+import { S3 } from 'aws-sdk';
+import { readS3 } from '../lib/awsMethods';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/infrastructure-stack.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//     // WHEN
-//   const stack = new Infrastructure.InfrastructureStack(app, 'MyTestStack');
-//     // THEN
-//   const template = Template.fromStack(stack);
+jest.mock('aws-sdk', () => {
+    const mockS3 = {
+        getObject: jest.fn(),
+    };
+    return { S3: jest.fn(() => mockS3) };
+});
 
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+jest.mock('../lib/awsMethods', () => ({
+    readS3: jest.fn(),
+}));
+
+const mockS3 = new S3() as jest.Mocked<S3>;
+const mockReadS3 = readS3 as jest.MockedFunction<typeof readS3>;
+
+describe('handler', () => {
+    const callback = jest.fn();
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+
+    it('should return 200 with file content if S3 read is successful', async () => {
+        const event = {
+            queryStringParameters: {
+                BUCKET_NAME: 'test-bucket',
+                fileName: 'test-file.txt',
+            },
+        } as any;
+
+        const mockData = { Body: Buffer.from('File content') };
+        mockReadS3.mockResolvedValue(mockData as any);
+
+        await handler(event, {} as any, callback);
+
+        expect(mockReadS3).toHaveBeenCalledWith('test-file.txt', 'test-bucket', mockS3);
+        expect(callback).toHaveBeenCalledWith(null, {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'File retrieved successfully!',
+                fileContent: 'File content',
+            }),
+        });
+    });
+
+
 });
